@@ -6,18 +6,24 @@ const { Dragger } = Upload;
 class Uploader extends Component {
     config = {
         name: 'file',
+        accept: ".pyc,.pyo",
         showUploadList: false,
-        action: '/file_upload',
+        action: 'http://127.0.0.1:8080/file_upload',
         onChange: (info) => {
             const { status, response } = info.file;
             if (status !== 'uploading') {
                 console.log('upload:', info.file.name);
             }
             if (status === 'done') {
-                this.props.change(response);
-                message.success(`${info.file.name} file uploaded successfully.`);
+                if (typeof (response) == 'string' && response.length > 20) {
+                    this.props.change(response);
+                    message.success(`${info.file.name} file uploaded successfully.`);
+                }
+                else {
+                    message.error(`Unable to parse file ${info.file.name}.`);
+                }
             } else if (status === 'error') {
-                this.props.change(response);
+                message.error(`${info.file.name} file upload failed.`);
             }
         }
     }
